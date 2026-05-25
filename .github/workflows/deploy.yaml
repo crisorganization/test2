@@ -5,13 +5,13 @@ on:
       types:
         - closed
       branches:
-        - dev
+        - develop
         - main
 
 jobs:
   deploy-development:
     name: Deploy to Development
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-latest
     environment: development
     steps:
