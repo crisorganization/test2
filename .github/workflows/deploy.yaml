@@ -3,18 +3,29 @@ name: Deploy
 on:
   pull_request:
     types:
-      - closed
+    - closed
     branches:
-      - dev
-      - staging
-      - main
+    - dev
+    - staging
+    - main
+  workflow_dispatch:
+
 jobs:
   deploy:
-    name: Deploy ${{github.event.pull_request.base.ref}}
+    name: Deploy ${{ github.event.pull_request.base.ref || github.ref_name }}
     runs-on: ubuntu-latest
-    env:
-      NAME: ${{ github.event.pull_request.base.ref == 'develop' && 'develop' || github.event.pull_request.base.ref == 'staging' && 'pre' || github.event.pull_request.base.ref == 'main' && 'prod' || '' }}
     steps:
+      - name: Set NAME variable
+        id: set_name
+        run: |
+          if [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "dev" ]; then
+            echo "NAME=develop" >> $GITHUB_ENV
+          elif [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "staging" ]; then
+            echo "NAME=pre" >> $GITHUB_ENV
+          elif [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "main" ]; then
+            echo "NAME=prod" >> $GITHUB_ENV
+          else
+            echo "NAME=" >> $GITHUB_ENV
+          fi
       - name: Echo NAME
         run: echo "NAME is $NAME"
-
