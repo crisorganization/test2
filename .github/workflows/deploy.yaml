@@ -1,63 +1,31 @@
-name: Deploy2
+name: Deploy
 
 on:
   pull_request:
-      types:
-        - closed
-      branches:
-        - develop
-        - main
+    types:
+    - closed
+    branches:
+    - dev
+    - staging
+    - main
+  workflow_dispatch:
 
 jobs:
-  deploy-development:
-    name: Deploy to Development
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+  deploy:
+    name: Deploy ${{ github.event.pull_request.base.ref || github.ref_name }}
     runs-on: ubuntu-latest
-    environment: development
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
+      - name: Set NAME variable
+        id: set_name
         run: |
-          echo "Deploying to DEVELOPMENT environment"
-          echo "NAME=${{ vars.NAME }}"
-
-  deploy-staging:
-    name: Deploy to Staging
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
-        run: |
-          echo "Deploying to STAGING environment"
-          echo "NAME=${{ vars.NAME }}"
-
-  deploy-production:
-    name: Deploy to Production
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
-        run: |
-          echo "Deploying to PRODUCTION environment"
-          echo "NAME=${{ vars.NAME }}"
-
+          if [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "dev" ]; then
+            echo "NAME=develop" >> $GITHUB_ENV
+          elif [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "staging" ]; then
+            echo "NAME=pre" >> $GITHUB_ENV
+          elif [ "${{ github.event.pull_request.base.ref || github.ref_name }}" = "main" ]; then
+            echo "NAME=prod" >> $GITHUB_ENV
+          else
+            echo "NAME=" >> $GITHUB_ENV
+          fi
+      - name: Echo NAME
+        run: echo "NAME is $NAME"
