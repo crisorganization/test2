@@ -12,7 +12,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy ${{ github.event.pull_request.base.ref || github.ref_name }}
+    name: Deploy 
     runs-on: ubuntu-latest
     steps:
       - name: Set NAME variable
