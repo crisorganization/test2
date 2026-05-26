@@ -1,66 +1,19 @@
-name: Deploy2
+name: Deploy
 
 on:
   pull_request:
-      types:
-        - closed
-      branches:
-        - develop
-        - main
-
+    types:
+      - closed
+    branches:
+      - dev
+      - staging
+      - main
 jobs:
-  deploy-development:
-    name: Deploy to Development
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+  deploy:
+    name: Deploy ${{github.event.pull_request.base.ref}}
     runs-on: ubuntu-latest
-    environment: development
+    env:
+      NAME: ${{ github.event.pull_request.base.ref == 'develop' && 'develop' || github.event.pull_request.base.ref == 'staging' && 'pre' || github.event.pull_request.base.ref == 'main' && 'prod' || '' }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
-        run: |
-          echo "Deploying to DEVELOPMENT environment"
-          echo "NAME=${{ vars.NAME }}"
-
-  deploy-staging:
-    name: Deploy to Staging
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
-        run: |
-          echo "Deploying to STAGING environment"
-          echo "NAME=${{ vars.NAME }}"
-
-  deploy-production:
-    name: Deploy to Production
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Show environment variable
-        run: echo "Name is ${{ vars.NAME }}"
-
-      - name: Deploy
-        run: |
-          echo "Deploying to PRODUCTION environment"
-          echo "NAME=${{ vars.NAME }}"
-
-
-
-
+      - name: Echo NAME
+        run: echo "NAME is $NAME"
