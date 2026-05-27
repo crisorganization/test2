@@ -3,10 +3,7 @@ name: Deploy_wf
 on:
   pull_request:
     branches: [ "main" ]
-    types: [opened, synchronize, reopened]
-    paths:
-      - .github/workflows/**
-      
+    types: [opened, synchronize, reopened]      
   workflow_dispatch:
 
 jobs:
