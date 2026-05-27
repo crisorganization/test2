@@ -1,4 +1,4 @@
-name: Deploy2
+name: Deploy_wf
 
 on:
   pull_request:
