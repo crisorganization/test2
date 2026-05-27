@@ -38,7 +38,7 @@ jobs:
       if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
       steps:
         - name: Echo hello world
-          run: echo "Hello world"
+          run: echo "${{github.event.pull_request.base.ref}}  -- ${{github.event.pull_request.base.ref }}"
 
           
 
