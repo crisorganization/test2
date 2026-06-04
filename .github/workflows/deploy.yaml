@@ -21,4 +21,4 @@ jobs:
     needs: paso1
     steps:
       - name: Build (dummy step)
-        run: echo "paso2"
+        run: echo "paso2 se ejecuta"
